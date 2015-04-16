@@ -8,14 +8,34 @@ module RuboCop
         options = Options.new(options) unless options.is_a?(Options)
 
         @options = options
+        show_precommit if @options.precommit
         @files = DiffParser.parse(git_diff(options))
 
         display_violations($stdout)
-        
+
         exit(1) if violations.any?
       end
 
       private
+
+      def show_precommit
+        puts <<-EOS
+#append this to your .git/hooks/precommit
+if bundle exec rubocop-git --autocorrect --cached -D;
+then
+  echo
+  echo "Passed rubocop"
+  echo
+else
+  echo
+  echo "Failed rubocop"
+  echo
+  exit 1
+fi
+        EOS
+        exit(0)
+      end
+
 
       def violations
         @violations ||= style_checker.violations
@@ -25,7 +45,7 @@ module RuboCop
         StyleChecker.new(pull_request.pull_request_files,
                          @options.rubocop,
                          @options.config_file,
-                         pull_request.config)
+                         pull_request.config, @options.auto_correct)
       end
 
       def pull_request

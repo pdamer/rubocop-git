@@ -55,6 +55,14 @@ module RuboCop
           opt.on('--hound', 'Hound compatibility mode') do
             @options.hound = true
           end
+
+          opt.on('--autocorrect', 'enable autocorrect') do
+            @options.auto_correct = true
+          end
+
+          opt.on('--precommit', 'display a sample precommit hook') do
+            @options.precommit = true
+          end
         end
       end
     end

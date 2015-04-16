@@ -7,7 +7,7 @@ module RuboCop
         File.expand_path('../../../../hound.yml', __FILE__)
 
       attr_accessor :config
-      attr_reader   :cached, :hound, :rubocop
+      attr_reader   :cached, :hound, :rubocop, :auto_correct, :precommit
 
       def initialize(hash_options = nil)
         @config  = nil
@@ -15,6 +15,8 @@ module RuboCop
         @hound   = false
         @rubocop = {}
         @commits = []
+        @auto_correct = false
+        @precommit = false
 
         from_hash(hash_options) if hash_options
       end
@@ -24,6 +26,14 @@ module RuboCop
           fail Invalid, 'cached and commit cannot be specified together'
         end
         @cached = !!cached_
+      end
+
+      def auto_correct=(auto_correct_)
+        @auto_correct = !!auto_correct_
+      end
+
+      def precommit=(precommit_)
+        @precommit = precommit_
       end
 
       def hound=(hound_)
@@ -71,7 +81,7 @@ module RuboCop
 
       def from_hash(hash_options)
         hash_options = hash_options.dup
-        %w(config cached hound rubocop commits).each do |key|
+        %w(config cached hound rubocop commits autocorrect).each do |key|
           public_send("#{key}=", hash_options.delete(key))
         end
         unless hash_options.empty?

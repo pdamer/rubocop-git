@@ -1,5 +1,6 @@
 require 'rubocop/git/version'
 require 'rubocop'
+require 'rake'
 
 module RuboCop
   module Git
